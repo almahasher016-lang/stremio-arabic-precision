@@ -19,6 +19,13 @@ try {
   const m=JSON.parse(manifest.body);
   if(manifest.status!==200||!m.resources?.includes('subtitles'))throw Error('invalid_manifest');
   results.push({route:'manifest',status:manifest.status});
+  try {
+    const upstream=await fetch('https://opensubtitles-v3.strem.io/subtitles/movie/tt0133093.json',{signal:AbortSignal.timeout(12000)});
+    const data=await upstream.json();
+    const subtitles=Array.isArray(data.subtitles)?data.subtitles:[];
+    const arabic=subtitles.filter(s=>['ar','ara','arabic'].includes(String(s.lang||'').toLowerCase()));
+    results.push({route:'official_stremio_source',status:upstream.status,total:subtitles.length,arabic:arabic.length,sampleFields:arabic.length?Object.keys(arabic[0]):[],downloadHosts:[...new Set(arabic.slice(0,5).map(s=>{try{return new URL(s.url).hostname;}catch{return 'invalid_url';}}))]});
+  } catch(error){results.push({route:'official_stremio_source',error:error.name||'error'});}
   let verified=false;
   for(const path of ['/subtitles/movie/tt0133093.json','/subtitles/series/tt0903747:1:1.json']){
     const response=await read(path);
