@@ -7,9 +7,10 @@ import {log} from './lib/log.js';
 import {opensubtitles} from './providers/opensubtitles.js';
 import {subdl} from './providers/subdl.js';
 import {subsource} from './providers/subsource.js';
+import {stremioV3} from './providers/stremio-v3.js';
 const digest = object=>createHash('sha256').update(JSON.stringify(object)).digest('hex');
 export function createEngine(config,{providers,logger=log}={}) {
-  const all=providers || [opensubtitles(config),subdl(config),subsource(config)];
+  const all=providers || [opensubtitles(config),subdl(config),subsource(config),stremioV3(config)];
   const enabled=all.filter(provider=>config.providers.includes(provider.name)&&provider.active);
   const searchCache=new TTLCache(1200,Date.now,16*1048576),rawCache=new TTLCache(100,Date.now,32*1048576),processedCache=new TTLCache(100,Date.now,32*1048576);
   const disk=new DiskCache(config.dataDir,{ttl:config.contentTTL,maxBytes:config.maxDownloadBytes});

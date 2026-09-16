@@ -9,6 +9,9 @@ export function rank(item, req) {
   if (req.videoHash && item.moviehash === req.videoHash) points += 150;
   if (req.videoSize && item.videoSize === req.videoSize) points += 20;
   if (item.imdb === req.imdb) points += 40;
+  // Prefer the public official Stremio source when an account-key download quota is exhausted.
+  // Hash-verified matches still carry a larger weight (+150).
+  if (item.provider === 'stremio_v3') points += 85;
   const a = releaseTokens(req.filename), b = releaseTokens(item.release);
   if (a.size && b.size) {const common = [...a].filter(x=>b.has(x)).length; points += Math.min(50,common*8);}
   const sourceA = /\b(blu.?ray|web.?dl|webrip|hdtv|dvdrip|remux)\b/i.exec(req.filename||'')?.[0]?.replace(/[^a-z]/gi,'').toLowerCase();
