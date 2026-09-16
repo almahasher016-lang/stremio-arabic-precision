@@ -24,7 +24,10 @@ try {
     const data=await upstream.json();
     const subtitles=Array.isArray(data.subtitles)?data.subtitles:[];
     const arabic=subtitles.filter(s=>['ar','ara','arabic'].includes(String(s.lang||'').toLowerCase()));
-    results.push({route:'official_stremio_source',status:upstream.status,total:subtitles.length,arabic:arabic.length,sampleFields:arabic.length?Object.keys(arabic[0]):[],downloadHosts:[...new Set(arabic.slice(0,5).map(s=>{try{return new URL(s.url).hostname;}catch{return 'invalid_url';}}))]});
+    results.push({route:'official_stremio_source',status:upstream.status,total:subtitles.length,arabic:arabic.length,languages:[...new Set(subtitles.map(s=>String(s.lang||s.language||'?')))].slice(0,30),sampleFields:subtitles.length?Object.keys(subtitles[0]):[],downloadHosts:[...new Set(subtitles.slice(0,5).map(s=>{try{return new URL(s.url).hostname;}catch{return 'invalid_url';}}))]});
+    const more=await fetch('https://opensubtitles-v3.strem.io/subtitles/movie/tt1375666.json',{signal:AbortSignal.timeout(12000)});
+    const extra=await more.json();
+    results.push({route:'official_stremio_inception',status:more.status,total:extra.subtitles?.length||0,arabic:extra.subtitles?.filter(s=>['ar','ara','arabic'].includes(String(s.lang||'').toLowerCase())).length||0});
   } catch(error){results.push({route:'official_stremio_source',error:error.name||'error'});}
   let verified=false;
   for(const path of ['/subtitles/movie/tt0133093.json','/subtitles/series/tt0903747:1:1.json']){
