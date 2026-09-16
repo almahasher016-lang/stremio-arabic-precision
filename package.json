@@ -1,0 +1,16 @@
+{
+  "name": "stremio-arabic-precision",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent Arabic-first Stremio subtitle addon with verified provider matching, bounded downloading and resilient caching",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js",
+    "check": "node scripts/check.js && npm test",
+    "test:live": "node scripts/live-providers.js"
+  }
+}

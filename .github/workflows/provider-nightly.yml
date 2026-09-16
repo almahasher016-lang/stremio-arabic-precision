@@ -1,0 +1,23 @@
+name: Provider API contracts (nightly)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *'
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Verify real provider search contracts (at most one search per provider)
+        run: npm run test:live
+        env:
+          RUN_LIVE_PROVIDER_TESTS: 'true'
+          OPENSUBTITLES_API_KEY: ${{ secrets.OPENSUBTITLES_API_KEY }}
+          OPENSUBTITLES_TOKEN: ${{ secrets.OPENSUBTITLES_TOKEN }}
+          SUBDL_API_KEY: ${{ secrets.SUBDL_API_KEY }}
+          SUBSOURCE_API_KEY: ${{ secrets.SUBSOURCE_API_KEY }}
